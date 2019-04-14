@@ -1,0 +1,23 @@
+user nginx;
+worker_processes auto;
+rtmp_auto_push on;
+events {}
+
+rtmp {
+    server {
+        listen [::]:1935 ipv6only=off;
+
+        application live {
+            live on;
+            record off;
+
+            {% if TWITCH_INGESTION_HOST is defined or TWITCH_STREAM_KEY is defined %}
+              push rtmp://{{TWITCH_INGESTION_HOST}}/app/{{TWITCH_STREAM_KEY}};
+            {% endif %}
+
+            {% if YOUTUBE_STREAM_KEY is defined %}
+              push rtmp://a.rtmp.youtube.com/live2/{{YOUTUBE_STREAM_KEY}};
+            {% endif %}
+        }
+    }
+}
